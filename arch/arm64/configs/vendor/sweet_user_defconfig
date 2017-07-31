@@ -5391,6 +5391,7 @@ CONFIG_MACH_XIAOMI_SDMMAGPIE=y
 #
 # Xiaomi board selection
 #
+<<<<<<< HEAD
 # CONFIG_MACH_XIAOMI_COURBET is not set
 # CONFIG_MACH_XIAOMI_DAVINCI is not set
 # CONFIG_MACH_XIAOMI_PHOENIX is not set
@@ -5416,3 +5417,9 @@ CONFIG_RMNET_SHS=y
 # CONFIG_TAS2563_CODEC is not set
 # CONFIG_TAS2563_MISC is not set
 # CONFIG_TAS2563_REGMAP is not set
+
+#
+# USB Fast Charging
+#
+CONFIG_FORCE_FAST_CHARGE=y
+
