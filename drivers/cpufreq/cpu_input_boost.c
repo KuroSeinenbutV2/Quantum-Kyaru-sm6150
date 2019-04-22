@@ -7,11 +7,11 @@
 
 #include <linux/cpu.h>
 #include <linux/cpufreq.h>
-#include <linux/msm_drm_notify.h>
 #include <linux/input.h>
 #include <linux/kthread.h>
-#include <linux/version.h>
+#include <linux/msm_drm_notify.h>
 #include <linux/slab.h>
+#include <linux/version.h>
 
 /* The sched_param struct is located elsewhere in newer kernels */
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 10, 0)
@@ -50,9 +50,9 @@ static unsigned int get_input_boost_freq(struct cpufreq_policy *policy)
 	unsigned int freq;
 
 	if (cpumask_test_cpu(policy->cpu, cpu_lp_mask))
-		freq = max(CONFIG_INPUT_BOOST_FREQ_LP, CONFIG_MIN_FREQ_LP);
+		freq = CONFIG_INPUT_BOOST_FREQ_LP;
 	else
-		freq = max(CONFIG_INPUT_BOOST_FREQ_PERF, CONFIG_MIN_FREQ_PERF);
+		freq = CONFIG_INPUT_BOOST_FREQ_PERF;
 
 	return min(freq, policy->max);
 }
@@ -205,10 +205,8 @@ static int cpu_notifier_cb(struct notifier_block *nb, unsigned long action,
 	 */
 	if (test_bit(INPUT_BOOST, &b->state))
 		policy->min = get_input_boost_freq(policy);
-	else if (cpumask_test_cpu(policy->cpu, cpu_lp_mask))
-		policy->min = CONFIG_MIN_FREQ_LP;
 	else
-		policy->min = CONFIG_MIN_FREQ_PERF;
+		policy->min = policy->cpuinfo.min_freq;
 
 	return NOTIFY_OK;
 }
@@ -307,11 +305,6 @@ static const struct input_device_id cpu_input_boost_ids[] = {
 		.flags = INPUT_DEVICE_ID_MATCH_EVBIT,
 		.evbit = { BIT_MASK(EV_KEY) }
 	},
-	/* Power Key */
-	{
-		.flags = INPUT_DEVICE_ID_MATCH_EVBIT,
-		.evbit = { BIT_MASK(KEY_POWER) }
-	},
 	{ }
 };
 
@@ -351,7 +344,7 @@ static int __init cpu_input_boost_init(void)
 		goto unregister_handler;
 	}
 
-	thread = kthread_run_perf_critical(cpu_perf_mask, cpu_boost_thread, b, "cpu_boostd");
+	thread = kthread_run(cpu_boost_thread, b, "cpu_boostd");
 	if (IS_ERR(thread)) {
 		ret = PTR_ERR(thread);
 		pr_err("Failed to start CPU boost thread, err: %d\n", ret);
