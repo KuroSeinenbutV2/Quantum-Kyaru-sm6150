@@ -449,7 +449,7 @@ static int LZ4_compress_fast_extState(
 	}
 }
 
-static int LZ4_compress_fast(const char *source, char *dest, int inputSize,
+int LZ4_compress_fast(const char *source, char *dest, int inputSize,
 	int maxOutputSize, int acceleration, void *wrkmem)
 {
 	return LZ4_compress_fast_extState(wrkmem, source, dest, inputSize,
@@ -701,7 +701,7 @@ static int LZ4_compress_destSize_extState(
 }
 
 
-static int LZ4_compress_destSize(
+int LZ4_compress_destSize(
 	const char *src,
 	char *dst,
 	int *srcSizePtr,
@@ -715,7 +715,7 @@ static int LZ4_compress_destSize(
 /*-******************************
  *	Streaming functions
  ********************************/
-static FORCE_INLINE void LZ4_resetStream(LZ4_stream_t *LZ4_stream)
+FORCE_INLINE void LZ4_resetStream(LZ4_stream_t *LZ4_stream)
 {
 	memset(LZ4_stream, 0, sizeof(LZ4_stream_t));
 }
@@ -802,7 +802,7 @@ int LZ4_saveDict(LZ4_stream_t *LZ4_dict, char *safeBuffer, int dictSize)
 }
 EXPORT_SYMBOL(LZ4_saveDict);
 
-static int LZ4_compress_fast_continue(LZ4_stream_t *LZ4_stream, const char *source,
+int LZ4_compress_fast_continue(LZ4_stream_t *LZ4_stream, const char *source,
 	char *dest, int inputSize, int maxOutputSize, int acceleration)
 {
 	LZ4_stream_t_internal *streamPtr = &LZ4_stream->internal_donotuse;
