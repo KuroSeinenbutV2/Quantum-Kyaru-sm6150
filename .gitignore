@@ -39,6 +39,7 @@
 *.symtypes
 *.tar
 *.xz
+kernel.sh
 Module.symvers
 modules.builtin
 
