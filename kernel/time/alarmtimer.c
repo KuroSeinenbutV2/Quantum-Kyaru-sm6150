@@ -64,6 +64,7 @@ static struct wakeup_source *ws;
 static struct rtc_timer		rtctimer;
 static struct rtc_device	*rtcdev;
 static DEFINE_SPINLOCK(rtcdev_lock);
+bool alarm_fired;
 
 static void alarmtimer_triggered_func(void *p)
 {
@@ -246,6 +247,7 @@ static enum hrtimer_restart alarmtimer_fired(struct hrtimer *timer)
 		ret = HRTIMER_RESTART;
 	}
 	spin_unlock_irqrestore(&base->lock, flags);
+	alarm_fired = true;
 
 	trace_alarmtimer_fired(alarm, base->gettime());
 	return ret;
@@ -312,7 +314,7 @@ static int alarmtimer_suspend(struct device *dev)
 		return 0;
 
 	if (ktime_to_ns(min) < 2 * NSEC_PER_SEC) {
-		__pm_wakeup_event(ws, 2 * MSEC_PER_SEC);
+		__pm_wakeup_event(ws, ktime_to_ms(min) + 1);
 		return -EBUSY;
 	}
 

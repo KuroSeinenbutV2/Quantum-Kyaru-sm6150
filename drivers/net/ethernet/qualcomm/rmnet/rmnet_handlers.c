@@ -89,13 +89,13 @@ void rmnet_set_skb_proto(struct sk_buff *skb)
 EXPORT_SYMBOL(rmnet_set_skb_proto);
 
 /* Shs hook handler */
-int (*rmnet_shs_skb_entry)(struct sk_buff *skb,
-			   struct rmnet_port *port) __rcu __read_mostly;
+void (*rmnet_shs_skb_entry)(struct sk_buff *skb,
+			    struct rmnet_port *port) __rcu __read_mostly;
 EXPORT_SYMBOL(rmnet_shs_skb_entry);
 
 /* Shs hook handler for work queue*/
-int (*rmnet_shs_skb_entry_wq)(struct sk_buff *skb,
-			      struct rmnet_port *port) __rcu __read_mostly;
+void (*rmnet_shs_skb_entry_wq)(struct sk_buff *skb,
+			       struct rmnet_port *port) __rcu __read_mostly;
 EXPORT_SYMBOL(rmnet_shs_skb_entry_wq);
 
 /* Generic handler */
@@ -103,7 +103,7 @@ EXPORT_SYMBOL(rmnet_shs_skb_entry_wq);
 void
 rmnet_deliver_skb(struct sk_buff *skb, struct rmnet_port *port)
 {
-	int (*rmnet_shs_stamp)(struct sk_buff *skb, struct rmnet_port *port);
+	void (*rmnet_shs_stamp)(struct sk_buff *skb, struct rmnet_port *port);
 	struct rmnet_priv *priv = netdev_priv(skb->dev);
 
 	trace_rmnet_low(RMNET_MODULE, RMNET_DLVR_SKB, 0xDEF, 0xDEF,
@@ -148,7 +148,7 @@ void
 rmnet_deliver_skb_wq(struct sk_buff *skb, struct rmnet_port *port,
 		     enum rmnet_packet_context ctx)
 {
-	int (*rmnet_shs_stamp)(struct sk_buff *skb, struct rmnet_port *port);
+	void (*rmnet_shs_stamp)(struct sk_buff *skb, struct rmnet_port *port);
 	struct rmnet_priv *priv = netdev_priv(skb->dev);
 
 	trace_rmnet_low(RMNET_MODULE, RMNET_DLVR_SKB, 0xDEF, 0xDEF,
@@ -362,8 +362,8 @@ free_skb:
 	kfree_skb(skb);
 }
 
-int (*rmnet_perf_deag_entry)(struct sk_buff *skb,
-			     struct rmnet_port *port) __rcu __read_mostly;
+void (*rmnet_perf_deag_entry)(struct sk_buff *skb,
+			      struct rmnet_port *port) __rcu __read_mostly;
 EXPORT_SYMBOL(rmnet_perf_deag_entry);
 
 static void
@@ -371,11 +371,11 @@ rmnet_map_ingress_handler(struct sk_buff *skb,
 			  struct rmnet_port *port)
 {
 	struct sk_buff *skbn;
-	int (*rmnet_perf_core_deaggregate)(struct sk_buff *skb,
-					   struct rmnet_port *port);
+	void (*rmnet_perf_core_deaggregate)(struct sk_buff *skb,
+					    struct rmnet_port *port);
 
 	if (skb->dev->type == ARPHRD_ETHER) {
-		if (pskb_expand_head(skb, ETH_HLEN, 0, GFP_KERNEL)) {
+		if (pskb_expand_head(skb, ETH_HLEN, 0, GFP_ATOMIC)) {
 			kfree_skb(skb);
 			return;
 		}
@@ -453,6 +453,11 @@ static int rmnet_map_egress_handler(struct sk_buff *skb,
 		if (pskb_expand_head(skb, required_headroom, 0, GFP_ATOMIC))
 			return -ENOMEM;
 	}
+
+#ifdef CONFIG_QCOM_QMI_HELPERS
+	if (port->data_format & RMNET_INGRESS_FORMAT_PS)
+		qmi_rmnet_work_maybe_restart(port);
+#endif
 
 	if (csum_type)
 		rmnet_map_checksum_uplink_packet(skb, port, orig_dev,

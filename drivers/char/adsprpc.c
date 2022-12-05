@@ -4727,12 +4727,14 @@ static struct platform_driver fastrpc_driver = {
 #ifdef CONFIG_PM_SLEEP
 		.pm = &fastrpc_pm,
 #endif
+		.probe_type = PROBE_FORCE_SYNCHRONOUS,
 	},
 };
 
 static const struct rpmsg_device_id fastrpc_rpmsg_match[] = {
 	{ FASTRPC_GLINK_GUID },
 	{ FASTRPC_SMD_GUID },
+	{},
 };
 
 static const struct of_device_id fastrpc_rpmsg_of_match[] = {

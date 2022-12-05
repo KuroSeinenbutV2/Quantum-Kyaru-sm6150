@@ -88,13 +88,6 @@ endif
 
 else # TARGET_BOARD_TYPE != auto
 
-dtb-$(CONFIG_ARCH_QCOM)	+= apq8016-sbc.dtb
-dtb-$(CONFIG_ARCH_QCOM)	+= apq8096-db820c.dtb
-dtb-$(CONFIG_ARCH_QCOM)	+= ipq8074-hk01.dtb
-dtb-$(CONFIG_ARCH_QCOM)	+= msm8916-mtp.dtb
-dtb-$(CONFIG_ARCH_QCOM)	+= msm8992-bullhead-rev-101.dtb
-dtb-$(CONFIG_ARCH_QCOM)	+= msm8994-angler-rev-101.dtb
-dtb-$(CONFIG_ARCH_QCOM)	+= msm8996-mtp.dtb
 dtb-$(CONFIG_ARCH_QCS403) += qcs403-iot-sku1.dtb \
 		qcs403-iot-sku3.dtb \
 		qcs403-iot-sku5.dtb \
@@ -314,28 +307,30 @@ dtb-$(CONFIG_ARCH_SM6150)	+= sm6150-rumi.dtb \
 endif
 
 ifeq ($(CONFIG_BUILD_ARM64_DT_OVERLAY),y)
-	dtbo-$(CONFIG_ARCH_SDMMAGPIE) += \
-		sdmmagpie-idp-overlay.dtbo \
-		sdmmagpie-atp-overlay.dtbo \
-		sdmmagpie-rumi-overlay.dtbo \
-		sdmmagpie-qrd-overlay.dtbo \
-		sdmmagpiep-idp-overlay.dtbo \
-		sdmmagpiep-atp-overlay.dtbo \
-		sdmmagpiep-qrd-overlay.dtbo \
-		sdmmagpie-external-codec-idp-overlay.dtbo \
-		sdmmagpie-usbc-idp-overlay.dtbo \
-		sdmmagpie-dual-display-idp-overlay.dtbo
+	dtbo-$(CONFIG_MACH_XIAOMI_DAVINCI) += \
+		davinci-sdmmagpie-overlay.dtbo \
+		davinci_m0a-sdmmagpie-overlay.dtbo \
+		davinci_m0b-sdmmagpie-overlay.dtbo
 
-sdmmagpie-idp-overlay.dtbo-base := sdmmagpie.dtb
-sdmmagpie-atp-overlay.dtbo-base := sdmmagpie.dtb
-sdmmagpie-rumi-overlay.dtbo-base := sdmmagpie.dtb
-sdmmagpie-qrd-overlay.dtbo-base := sdmmagpie.dtb
-sdmmagpiep-idp-overlay.dtbo-base := sdmmagpiep.dtb
-sdmmagpiep-atp-overlay.dtbo-base := sdmmagpiep.dtb
-sdmmagpiep-qrd-overlay.dtbo-base := sdmmagpiep.dtb
-sdmmagpie-external-codec-idp-overlay.dtbo-base := sdmmagpie.dtb
-sdmmagpie-usbc-idp-overlay.dtbo-base := sdmmagpie.dtb
-sdmmagpie-dual-display-idp-overlay.dtbo-base := sdmmagpie.dtb
+	dtbo-$(CONFIG_MACH_XIAOMI_PHOENIX) += \
+		phoenix-sdmmagpie-overlay.dtbo
+
+	dtbo-$(CONFIG_MACH_XIAOMI_SWEET) += \
+		sweet-sdmmagpie-overlay.dtbo
+
+	dtbo-$(CONFIG_MACH_XIAOMI_TOCO) += \
+		toco-sdmmagpie-overlay.dtbo
+
+	dtbo-$(CONFIG_MACH_XIAOMI_TUCANA) += \
+		tucana-sdmmagpie-overlay.dtbo
+
+davinci-sdmmagpie-overlay.dtbo-base := sdmmagpie.dtb
+davinci_m0a-sdmmagpie-overlay.dtbo-base := sdmmagpie.dtb
+davinci_m0b-sdmmagpie-overlay.dtbo-base := sdmmagpie.dtb
+phoenix-sdmmagpie-overlay.dtbo-base := sdmmagpie.dtb
+sweet-sdmmagpie-overlay.dtbo-base := sdmmagpie.dtb
+toco-sdmmagpie-overlay.dtbo-base := sdmmagpie.dtb
+tucana-sdmmagpie-overlay.dtbo-base := sdmmagpie.dtb
 else
 dtb-$(CONFIG_ARCH_SDMMAGPIE)	+= sdmmagpie-rumi.dtb \
 	sdmmagpie-idp.dtb \
@@ -344,6 +339,13 @@ dtb-$(CONFIG_ARCH_SDMMAGPIE)	+= sdmmagpie-rumi.dtb \
 	sdmmagpiep-idp.dtb \
 	sdmmagpiep-atp.dtb \
 	sdmmagpiep-qrd.dtb \
+	davinci-sdmmagpie.dtb \
+	tucana-sdmmagpie.dtb \
+	toco-sdmmagpie.dtb \
+	davinci_m0a-sdmmagpie.dtb \
+	davinci_m0b-sdmmagpie.dtb \
+	phoenix-sdmmagpie.dtb \
+	sweet-sdmmagpie.dtb \
 	sdmmagpie-external-codec-idp.dtb \
 	sdmmagpie-usbc-idp.dtb \
 	sdmmagpie-dual-display-idp.dtb

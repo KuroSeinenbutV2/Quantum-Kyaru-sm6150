@@ -90,7 +90,6 @@ INCS +=		$(COMMON_INC) \
 
 EXTRA_CFLAGS += $(INCS)
 
-
 CDEFINES +=	-DANI_LITTLE_BYTE_ENDIAN \
 		-DANI_LITTLE_BIT_ENDIAN \
 		-DDOT11F_LITTLE_ENDIAN_HOST \
@@ -143,6 +142,3 @@ tx_macro_dlkm-y := $(TX_OBJS)
 
 obj-$(CONFIG_RX_MACRO) += rx_macro_dlkm.o
 rx_macro_dlkm-y := $(RX_OBJS)
-
-# inject some build related information
-DEFINES += -DBUILD_TIMESTAMP=\"$(shell date -u +'%Y-%m-%dT%H:%M:%SZ')\"

@@ -1,4 +1,5 @@
 /* Copyright (c) 2017-2019, The Linux Foundation. All rights reserved.
+ * Copyright (C) 2021 XiaoMi, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -21,6 +22,7 @@
 #include "cam_common_util.h"
 
 struct sync_device *sync_dev;
+static struct kmem_cache *kmem_payload_pool;
 
 /*
  * Flag to determine whether to enqueue cb of a
@@ -34,12 +36,16 @@ void cam_sync_print_fence_table(void)
 	int cnt;
 
 	for (cnt = 0; cnt < CAM_SYNC_MAX_OBJS; cnt++) {
-		CAM_INFO(CAM_SYNC, "%d, %s, %d, %d, %d",
-			sync_dev->sync_table[cnt].sync_id,
-			sync_dev->sync_table[cnt].name,
-			sync_dev->sync_table[cnt].type,
-			sync_dev->sync_table[cnt].state,
-			sync_dev->sync_table[cnt].ref_cnt);
+		spin_lock_bh(&sync_dev->row_spinlocks[cnt]);
+		if (test_bit(cnt, sync_dev->bitmap)) {
+			CAM_INFO(CAM_SYNC, "row[%d], name[%s], type[%d], state[%d], ref_cnt[%d]",
+				sync_dev->sync_table[cnt].sync_id,
+				sync_dev->sync_table[cnt].name,
+				sync_dev->sync_table[cnt].type,
+				sync_dev->sync_table[cnt].state,
+				sync_dev->sync_table[cnt].ref_cnt);
+		}
+		spin_unlock_bh(&sync_dev->row_spinlocks[cnt]);
 	}
 }
 
@@ -352,7 +358,7 @@ int cam_sync_get_obj_ref(int32_t sync_obj)
 
 	if (row->state != CAM_SYNC_STATE_ACTIVE) {
 		spin_unlock(&sync_dev->row_spinlocks[sync_obj]);
-		CAM_ERR_RATE_LIMIT_CUSTOM(CAM_SYNC, 1, 5,
+		CAM_ERR(CAM_SYNC,
 			"accessing an uninitialized sync obj = %d state = %d",
 			sync_obj, row->state);
 		return -EINVAL;
@@ -632,7 +638,7 @@ static int cam_sync_handle_register_user_payload(
 	if (sync_obj >= CAM_SYNC_MAX_OBJS || sync_obj <= 0)
 		return -EINVAL;
 
-	user_payload_kernel = kzalloc(sizeof(*user_payload_kernel), GFP_KERNEL);
+	user_payload_kernel = kmem_cache_zalloc(kmem_payload_pool, GFP_KERNEL);
 	if (!user_payload_kernel)
 		return -ENOMEM;
 
@@ -648,7 +654,7 @@ static int cam_sync_handle_register_user_payload(
 			"Error: accessing an uninitialized sync obj = %d",
 			sync_obj);
 		spin_unlock_bh(&sync_dev->row_spinlocks[sync_obj]);
-		kfree(user_payload_kernel);
+		kmem_cache_free(kmem_payload_pool, user_payload_kernel);
 		return -EINVAL;
 	}
 
@@ -662,7 +668,7 @@ static int cam_sync_handle_register_user_payload(
 			CAM_SYNC_USER_PAYLOAD_SIZE * sizeof(__u64));
 
 		spin_unlock_bh(&sync_dev->row_spinlocks[sync_obj]);
-		kfree(user_payload_kernel);
+		kmem_cache_free(kmem_payload_pool, user_payload_kernel);
 		return 0;
 	}
 
@@ -676,7 +682,7 @@ static int cam_sync_handle_register_user_payload(
 				user_payload_kernel->payload_data[1]) {
 
 			spin_unlock_bh(&sync_dev->row_spinlocks[sync_obj]);
-			kfree(user_payload_kernel);
+			kmem_cache_free(kmem_payload_pool, user_payload_kernel);
 			return -EALREADY;
 		}
 	}
@@ -731,7 +737,7 @@ static int cam_sync_handle_deregister_user_payload(
 				user_payload_kernel->payload_data[1] ==
 				userpayload_info.payload[1]) {
 			list_del_init(&user_payload_kernel->list);
-			kfree(user_payload_kernel);
+			kmem_cache_free(kmem_payload_pool, user_payload_kernel);
 		}
 	}
 
@@ -1133,6 +1139,8 @@ static int __init cam_sync_init(void)
 {
 	int rc;
 
+	kmem_payload_pool = KMEM_CACHE(sync_user_payload, SLAB_HWCACHE_ALIGN | SLAB_PANIC);
+
 	rc = platform_device_register(&cam_sync_device);
 	if (rc)
 		return -ENODEV;
@@ -1149,6 +1157,8 @@ static void __exit cam_sync_exit(void)
 	platform_driver_unregister(&cam_sync_driver);
 	platform_device_unregister(&cam_sync_device);
 	kfree(sync_dev);
+
+	kmem_cache_destroy(kmem_payload_pool);
 }
 
 module_init(cam_sync_init);
