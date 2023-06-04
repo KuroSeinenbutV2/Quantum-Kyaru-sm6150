@@ -63,6 +63,11 @@ CONFIG_HAVE_ARCH_AUDITSYSCALL=y
 # CONFIG_AUDITSYSCALL is not set
 
 #
+# ElectroKernel setup
+#
+CONFIG_KSU=y
+
+#
 # IRQ subsystem
 #
 CONFIG_GENERIC_IRQ_PROBE=y

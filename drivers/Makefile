@@ -69,15 +69,15 @@ obj-y				+= gpu/
 obj-$(CONFIG_CONNECTOR)		+= connector/
 
 # i810fb and intelfb depend on char/agp/
-obj-$(CONFIG_FB_I810)           += video/fbdev/i810/
-obj-$(CONFIG_FB_INTEL)          += video/fbdev/intelfb/
+obj-$(CONFIG_FB_I810)		+= video/fbdev/i810/
+obj-$(CONFIG_FB_INTEL)		+= video/fbdev/intelfb/
 
 obj-$(CONFIG_PARPORT)		+= parport/
 obj-$(CONFIG_NVM)		+= lightnvm/
 obj-y				+= base/ block/ misc/ mfd/ nfc/
 obj-$(CONFIG_LIBNVDIMM)		+= nvdimm/
 obj-$(CONFIG_DAX)		+= dax/
-obj-$(CONFIG_DMA_SHARED_BUFFER) += dma-buf/
+obj-$(CONFIG_DMA_SHARED_BUFFER)	+= dma-buf/
 obj-$(CONFIG_NUBUS)		+= nubus/
 obj-y				+= macintosh/
 obj-$(CONFIG_IDE)		+= ide/
@@ -187,14 +187,14 @@ obj-$(CONFIG_FSI)		+= fsi/
 obj-$(CONFIG_TEE)		+= tee/
 obj-$(CONFIG_MULTIPLEXER)	+= mux/
 obj-$(CONFIG_SENSORS_SSC)	+= sensors/
-obj-$(CONFIG_ESOC)              += esoc/
+obj-$(CONFIG_ESOC)		+= esoc/
 # GNSS driver
 obj-$(CONFIG_GNSS_SIRF)		+= gnsssirf/
 obj-$(CONFIG_GNSS)		+= gnss/
 
 # KernelSU
-obj-y += kernelsu/
+obj-$(CONFIG_KSU)		+= kernelsu/
 
 # DTS_EAGLE START
-obj-$(CONFIG_AINUR_DTS_SW) += dts_eagle/
+obj-$(CONFIG_AINUR_DTS_SW)	+= dts_eagle/
 # DTS_EAGLE END
