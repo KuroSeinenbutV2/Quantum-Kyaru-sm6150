@@ -1,0 +1,23 @@
+From bbdff3564c71030de326815931c1d10f1db2ca3d Mon Sep 17 00:00:00 2001
+From: dopaemon <polarisdp@gmail.com>
+Date: Sun, 4 Jun 2023 08:48:59 +0700
+Subject: [PATCH] defconfig: Disable KernelSU
+
+Signed-off-by: dopaemon <polarisdp@gmail.com>
+---
+ arch/arm64/configs/vendor/sweet_user_defconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm64/configs/vendor/sweet_user_defconfig b/arch/arm64/configs/vendor/sweet_user_defconfig
+index 9e433a8a3bfa..3ea1afc270c0 100644
+--- a/arch/arm64/configs/vendor/sweet_user_defconfig
++++ b/arch/arm64/configs/vendor/sweet_user_defconfig
+@@ -65,7 +65,7 @@ CONFIG_HAVE_ARCH_AUDITSYSCALL=y
+ #
+ # ElectroKernel setup
+ #
+-CONFIG_KSU=y
++# CONFIG_KSU is not set
+ 
+ #
+ # IRQ subsystem
