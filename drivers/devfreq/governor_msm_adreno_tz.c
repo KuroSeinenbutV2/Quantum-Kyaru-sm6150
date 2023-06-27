@@ -477,6 +477,7 @@ static int tz_get_target_freq(struct devfreq *devfreq, unsigned long *freq)
 	} else if (simple_gpu_active) {
 			simple_gpu_algorithm(level, &val, priv);
 	} else {
+		unsigned int refresh_rate = dsi_panel_get_refresh_rate();
 #else
 	} else {
 #endif
