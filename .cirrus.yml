@@ -12,4 +12,4 @@ task:
   only_if: $CIRRUS_BRANCH == '13'
   script:
     - wget -qO build.sh https://raw.githubusercontent.com/KuroSeinenbutV2/scriptpribet/master/CI-sweet.sh
-    - bash build.sh gcc stable lto
+    - bash build.sh gcc stable
