@@ -1,0 +1,21 @@
+name: CI
+on:
+  push:
+    branches: [ "13" ]
+env:
+  TZ: "Asia/Jakarta"
+  TELEGRAM_TOKEN: "${{ secrets.TELEGRAM_TOKEN }}"
+  GCC_IGNORE_WERROR: "1"
+jobs:
+  build-gcc:
+    runs-on: self-hosted
+#    container: diazaji/debian:kernel
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: true
+    - name: build
+      run: |
+        wget -qO build.sh https://raw.githubusercontent.com/KuroSeinenbutV2/scriptpribet/master/CI-sweet.sh
+        bash build.sh gcc stable
+  
