@@ -349,7 +349,7 @@ int aw_dsp_read_msg(struct aw_device *aw_dev,
 int aw_dsp_write_cali_cfg(struct aw_device *aw_dev, char *data, unsigned int data_len)
 {
 	uint32_t msg_id;
-	int ret;
+	int ret= 0;
 	int msg_num;
 
 	ret = aw_get_msg_num(aw_dev->channel, &msg_num);
