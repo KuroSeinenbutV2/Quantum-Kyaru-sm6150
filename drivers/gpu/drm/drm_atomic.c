@@ -2250,11 +2250,9 @@ static int __drm_mode_atomic_ioctl(struct drm_device *dev, void *data,
 			(arg->flags & DRM_MODE_PAGE_FLIP_EVENT))
 		return -EINVAL;
 
-	/* Boost CPU and DDR when committing a new frame */
 	if (!(arg->flags & DRM_MODE_ATOMIC_TEST_ONLY)) {
 		devfreq_boost_kick(DEVFREQ_CPU_LLCC_DDR_BW);
-		if (sysctl_sched_boost)
-			cpu_input_boost_kick();
+
 	}
 
 	drm_modeset_acquire_init(&ctx, 0);
